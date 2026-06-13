@@ -41,6 +41,10 @@ const routes = [
         meta: { title: '个人中心' }
       }
     ]
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/dashboard'
   }
 ]
 

@@ -6,7 +6,9 @@ import com.example.ems.mapper.EmployeeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class EmployeeService {
@@ -41,8 +43,11 @@ public class EmployeeService {
     }
 
     public Result<?> update(Employee employee) {
-        Employee exist = employeeMapper.findById(employee.getId());
-        if (exist == null) {
+        if (employee.getId() == null) {
+            return Result.error("员工ID不能为空");
+        }
+        Employee existing = employeeMapper.findById(employee.getId());
+        if (existing == null) {
             return Result.error("员工不存在");
         }
         employeeMapper.update(employee);
@@ -50,14 +55,18 @@ public class EmployeeService {
     }
 
     public Result<?> deleteById(Long id) {
+        Employee employee = employeeMapper.findById(id);
+        if (employee == null) {
+            return Result.error("员工不存在");
+        }
         employeeMapper.deleteById(id);
         return Result.success("删除成功");
     }
 
     public Result<?> getStats() {
-        int total = employeeMapper.countAll();
-        java.util.Map<String, Object> stats = new java.util.HashMap<>();
-        stats.put("totalEmployees", total);
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalEmployees", employeeMapper.countAll());
+        stats.put("activeEmployees", employeeMapper.countActive());
         return Result.success(stats);
     }
 }

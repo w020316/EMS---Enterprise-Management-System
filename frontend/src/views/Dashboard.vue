@@ -155,7 +155,9 @@ onMounted(async () => {
         color: colors[i % colors.length]
       }
     })
-  } catch (e) {}
+  } catch (e) {
+    console.error('Dashboard load error:', e)
+  }
 })
 </script>
 

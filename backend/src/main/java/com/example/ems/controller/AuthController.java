@@ -37,8 +37,7 @@ public class AuthController {
     @PutMapping("/profile")
     public Result<?> updateProfile(@RequestBody User user, Authentication authentication) {
         Long userId = (Long) authentication.getPrincipal();
-        user.setId(userId);
-        return userService.updateProfile(user);
+        return userService.updateProfile(userId, user);
     }
 
     @PutMapping("/password")

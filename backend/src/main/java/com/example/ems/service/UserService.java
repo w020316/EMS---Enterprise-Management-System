@@ -73,13 +73,17 @@ public class UserService {
         return Result.success(sanitizeUser(user));
     }
 
-    public Result<?> updateProfile(User user) {
-        User existUser = userMapper.findById(user.getId());
-        if (existUser == null) {
+    public Result<?> updateProfile(Long userId, User updateData) {
+        User user = userMapper.findById(userId);
+        if (user == null) {
             return Result.error("用户不存在");
         }
+        // Only allow updating safe fields
+        if (updateData.getEmail() != null) user.setEmail(updateData.getEmail());
+        if (updateData.getPhone() != null) user.setPhone(updateData.getPhone());
+        if (updateData.getAvatar() != null) user.setAvatar(updateData.getAvatar());
         userMapper.update(user);
-        return Result.success("更新成功");
+        return Result.success(sanitizeUser(user));
     }
 
     public Result<?> changePassword(Long userId, ChangePasswordDTO dto) {

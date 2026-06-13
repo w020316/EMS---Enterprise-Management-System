@@ -16,6 +16,7 @@
             <if test="avatar != null">avatar = #{avatar},</if>
             <if test="role != null">role = #{role},</if>
             <if test="status != null">status = #{status},</if>
+            <if test="password != null">password = #{password},</if>
         </set>
         WHERE id = #{id}
     </update>

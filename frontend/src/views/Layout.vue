@@ -73,7 +73,7 @@
       <el-main class="layout-main">
         <router-view v-slot="{ Component }">
           <transition name="slide-fade" mode="out-in">
-            <component :is="Component" />
+            <component :is="Component" :key="route.path" />
           </transition>
         </router-view>
       </el-main>

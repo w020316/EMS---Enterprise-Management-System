@@ -26,6 +26,15 @@ public class FileService {
         }
 
         String originalFilename = file.getOriginalFilename();
+        // Validate file type
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new RuntimeException("仅支持上传图片文件");
+        }
+        // Validate file size (max 5MB)
+        if (file.getSize() > 5 * 1024 * 1024) {
+            throw new RuntimeException("文件大小不能超过5MB");
+        }
         String ext = "";
         if (originalFilename != null && originalFilename.contains(".")) {
             ext = originalFilename.substring(originalFilename.lastIndexOf("."));

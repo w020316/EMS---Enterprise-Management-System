@@ -213,7 +213,24 @@ const loadDepartments = async () => {
 }
 
 const handleAdd = () => { resetForm(); dialogTitle.value = '添加员工'; dialogVisible.value = true }
-const handleEdit = (row) => { Object.assign(form, { ...row }); dialogTitle.value = '编辑员工'; dialogVisible.value = true }
+const handleEdit = (row) => {
+  Object.assign(form, {
+    id: row.id,
+    name: row.name,
+    gender: row.gender,
+    birthDate: row.birthDate,
+    phone: row.phone,
+    email: row.email,
+    departmentId: row.departmentId,
+    position: row.position,
+    salary: row.salary,
+    hireDate: row.hireDate,
+    status: row.status,
+    avatar: row.avatar
+  })
+  dialogTitle.value = '编辑员工'
+  dialogVisible.value = true
+}
 
 const handleDelete = (row) => {
   ElMessageBox.confirm(`确定删除员工"${row.name}"吗？`, '提示', {

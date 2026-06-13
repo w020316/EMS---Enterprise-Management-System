@@ -37,6 +37,9 @@ public class DepartmentService {
     }
 
     public Result<?> update(Department department) {
+        if (department.getId() == null) {
+            return Result.error("部门ID不能为空");
+        }
         Department exist = departmentMapper.findById(department.getId());
         if (exist == null) {
             return Result.error("部门不存在");
@@ -46,6 +49,10 @@ public class DepartmentService {
     }
 
     public Result<?> deleteById(Long id) {
+        Department department = departmentMapper.findById(id);
+        if (department == null) {
+            return Result.error("部门不存在");
+        }
         int count = employeeMapper.countByDepartmentId(id);
         if (count > 0) {
             return Result.error("该部门下还有员工，无法删除");

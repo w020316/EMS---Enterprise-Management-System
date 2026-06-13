@@ -136,7 +136,7 @@ const handleChangePassword = async () => {
     showPasswordDialog.value = false
     localStorage.removeItem('token')
     localStorage.removeItem('user')
-    window.location.href = '/login'
+    router.push('/login')
   } finally {
     pwdLoading.value = false
   }

@@ -15,4 +15,5 @@ public interface EmployeeMapper {
     int deleteById(@Param("id") Long id);
     int countByDepartmentId(@Param("departmentId") Long departmentId);
     int countAll();
+    int countActive();
 }

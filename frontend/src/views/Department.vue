@@ -80,7 +80,16 @@ const loadData = async () => {
 }
 
 const handleAdd = () => { resetForm(); dialogTitle.value = '添加部门'; dialogVisible.value = true }
-const handleEdit = (row) => { Object.assign(form, { ...row }); dialogTitle.value = '编辑部门'; dialogVisible.value = true }
+const handleEdit = (row) => {
+  Object.assign(form, {
+    id: row.id,
+    name: row.name,
+    manager: row.manager,
+    description: row.description
+  })
+  dialogTitle.value = '编辑部门'
+  dialogVisible.value = true
+}
 
 const handleDelete = (row) => {
   ElMessageBox.confirm(`确定删除部门"${row.name}"吗？`, '提示', {
