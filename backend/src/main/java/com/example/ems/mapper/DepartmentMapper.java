@@ -13,4 +13,5 @@ public interface DepartmentMapper {
     int update(Department department);
     int deleteById(@Param("id") Long id);
     int countByManager(@Param("manager") String manager);
+    Department findByName(@Param("name") String name);
 }

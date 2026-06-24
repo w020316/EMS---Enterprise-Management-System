@@ -2,11 +2,16 @@
   <div class="department-page">
     <el-card shadow="hover">
       <div class="toolbar">
-        <span class="page-label">部门列表</span>
+        <div class="search-bar">
+          <span class="page-label">部门列表</span>
+          <el-input v-model="searchKeyword" placeholder="搜索部门名称" clearable style="width:200px;margin-left:12px" @clear="filterDepts" @keyup.enter="filterDepts">
+            <template #prefix><el-icon><Search /></el-icon></template>
+          </el-input>
+        </div>
         <el-button type="primary" @click="handleAdd"><el-icon><Plus /></el-icon>添加部门</el-button>
       </div>
       <el-row :gutter="16" style="margin-top:16px">
-        <el-col :span="8" v-for="dept in departmentList" :key="dept.id">
+        <el-col :span="8" v-for="dept in filteredDepartments" :key="dept.id">
           <el-card shadow="hover" class="dept-card">
             <div class="dept-card-header">
               <div class="dept-icon">
@@ -15,6 +20,7 @@
               <div class="dept-info">
                 <h3 class="dept-name">{{ dept.name }}</h3>
                 <p class="dept-manager">负责人：{{ dept.manager || '暂无' }}</p>
+                <p class="dept-count-info">员工人数：{{ getDeptEmployeeCount(dept.id) }}人</p>
               </div>
               <el-dropdown trigger="click">
                 <el-button link><el-icon><MoreFilled /></el-icon></el-button>
@@ -30,7 +36,7 @@
           </el-card>
         </el-col>
       </el-row>
-      <el-empty v-if="!departmentList.length" description="暂无部门数据" />
+      <el-empty v-if="!filteredDepartments.length" description="暂无部门数据" />
     </el-card>
 
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="450px" destroy-on-close>
@@ -56,12 +62,15 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, OfficeBuilding, MoreFilled, Edit, Delete } from '@element-plus/icons-vue'
+import { Plus, OfficeBuilding, MoreFilled, Edit, Delete, Search } from '@element-plus/icons-vue'
 import { getDepartmentList, addDepartment, updateDepartment, deleteDepartment } from '../api/department'
+import { getEmployeeList } from '../api/employee'
 
 const loading = ref(false)
 const submitLoading = ref(false)
 const departmentList = ref([])
+const filteredDepartments = ref([])
+const employees = ref([])
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const formRef = ref()
@@ -71,11 +80,24 @@ const formRules = { name: [{ required: true, message: '请输入部门名称', t
 
 const resetForm = () => { Object.assign(form, { id: null, name: '', manager: '', description: '' }) }
 
+const searchKeyword = ref('')
+
+const filterDepts = () => {
+  filteredDepartments.value = searchKeyword.value ? departmentList.value.filter(d => d.name.includes(searchKeyword.value)) : departmentList.value
+}
+
+const getDeptEmployeeCount = (deptId) => {
+  return employees.value.filter(e => e.departmentId === deptId).length
+}
+
 const loadData = async () => {
   loading.value = true
   try {
     const res = await getDepartmentList()
     departmentList.value = res.data || []
+    const empRes = await getEmployeeList({ page: 1, size: 999 })
+    employees.value = empRes.data.list || empRes.data || []
+    filterDepts()
   } finally { loading.value = false }
 }
 
@@ -118,6 +140,7 @@ onMounted(() => { loadData() })
 
 <style scoped>
 .toolbar { display: flex; justify-content: space-between; align-items: center; }
+.search-bar { display: flex; align-items: center; }
 .page-label { font-size: 16px; font-weight: 600; color: #333; }
 .dept-card { margin-bottom: 16px; transition: all 0.3s; }
 .dept-card:hover { transform: translateY(-2px); }
@@ -131,5 +154,6 @@ onMounted(() => { loadData() })
 .dept-info { flex: 1; }
 .dept-name { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 2px; }
 .dept-manager { font-size: 13px; color: #8c8c8c; }
+.dept-count-info { font-size: 13px; color: #409EFF; margin-top: 4px; }
 .dept-desc { margin-top: 12px; font-size: 13px; color: #666; line-height: 1.6; }
 </style>

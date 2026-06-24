@@ -7,8 +7,8 @@ import java.util.List;
 
 @Mapper
 public interface EmployeeMapper {
-    List<Employee> findAll();
-    List<Employee> findByCondition(@Param("name") String name, @Param("departmentId") Long departmentId, @Param("status") Integer status);
+    List<Employee> findAll(@Param("offset") int offset, @Param("size") int size);
+    List<Employee> findByCondition(@Param("name") String name, @Param("departmentId") Long departmentId, @Param("status") Integer status, @Param("offset") int offset, @Param("size") int size);
     Employee findById(@Param("id") Long id);
     int insert(Employee employee);
     int update(Employee employee);
@@ -16,4 +16,5 @@ public interface EmployeeMapper {
     int countByDepartmentId(@Param("departmentId") Long departmentId);
     int countAll();
     int countActive();
+    int countByCondition(@Param("name") String name, @Param("departmentId") Long departmentId, @Param("status") Integer status);
 }

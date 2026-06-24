@@ -1,6 +1,7 @@
 package com.example.ems.config;
 
 import com.example.ems.dto.Result;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -26,6 +27,11 @@ public class GlobalExceptionHandler {
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining(", "));
         return Result.error(400, message);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public Result<?> handleAccessDeniedException(AccessDeniedException e) {
+        return Result.error(403, "权限不足，仅管理员可执行此操作");
     }
 
     @ExceptionHandler(RuntimeException.class)

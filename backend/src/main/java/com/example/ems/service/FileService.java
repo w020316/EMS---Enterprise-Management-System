@@ -7,6 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -30,6 +32,15 @@ public class FileService {
         String contentType = file.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
             throw new RuntimeException("仅支持上传图片文件");
+        }
+        // Validate file extension whitelist
+        List<String> allowedExtensions = Arrays.asList("jpg", "jpeg", "png", "gif", "webp");
+        String fileExt = "";
+        if (originalFilename != null && originalFilename.contains(".")) {
+            fileExt = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
+        }
+        if (!allowedExtensions.contains(fileExt)) {
+            throw new RuntimeException("仅支持上传JPG/PNG/GIF/WEBP格式图片");
         }
         // Validate file size (max 5MB)
         if (file.getSize() > 5 * 1024 * 1024) {

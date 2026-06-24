@@ -24,6 +24,9 @@ request.interceptors.response.use(
         localStorage.removeItem('token')
         router.push('/login')
       }
+      if (res.code === 403) {
+        ElMessage.error('权限不足，仅管理员可执行此操作')
+      }
       return Promise.reject(new Error(res.message))
     }
     return res
@@ -33,6 +36,8 @@ request.interceptors.response.use(
       localStorage.removeItem('token')
       router.push('/login')
       ElMessage.error('登录已过期，请重新登录')
+    } else if (error.response && error.response.status === 403) {
+      ElMessage.error('权限不足，仅管理员可执行此操作')
     } else {
       ElMessage.error(error.message || '网络错误')
     }

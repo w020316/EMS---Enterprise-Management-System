@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard">
+  <div class="dashboard" v-loading="loading">
     <el-row :gutter="20">
       <el-col :span="6">
         <el-card class="stat-card stat-blue" shadow="hover">
@@ -65,7 +65,16 @@
             </div>
           </template>
           <el-table :data="recentEmployees" stripe style="width:100%">
-            <el-table-column prop="name" label="姓名" width="100" />
+            <el-table-column prop="name" label="姓名" width="120">
+              <template #default="{ row }">
+                <div class="name-cell">
+                  <el-avatar :size="28" :src="row.avatar || undefined" style="background:linear-gradient(135deg,#667eea,#764ba2);font-size:12px">
+                    {{ row.name ? row.name.charAt(0) : '?' }}
+                  </el-avatar>
+                  <span>{{ row.name }}</span>
+                </div>
+              </template>
+            </el-table-column>
             <el-table-column prop="departmentName" label="部门" width="120" />
             <el-table-column prop="position" label="职位" width="120" />
             <el-table-column prop="phone" label="手机号" width="140" />
@@ -116,6 +125,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
 import { User, OfficeBuilding, Avatar, Remove, Plus } from '@element-plus/icons-vue'
 import { getEmployeeList, getEmployeeStats } from '../api/employee'
 import { getDepartmentList } from '../api/department'
@@ -123,25 +133,26 @@ import { getDepartmentList } from '../api/department'
 const stats = ref({})
 const recentEmployees = ref([])
 const deptStats = ref([])
+const loading = ref(false)
 
 const colors = ['#409EFF', '#67C23A', '#E6A23C', '#F56C6C', '#909399', '#00bcd4']
 
 onMounted(async () => {
+  loading.value = true
   try {
     const [empRes, deptRes, statsRes] = await Promise.all([
-      getEmployeeList(),
+      getEmployeeList({ page: 1, size: 999 }),
       getDepartmentList(),
       getEmployeeStats()
     ])
-    const employees = empRes.data || []
+    const employees = empRes.data.list || empRes.data || []
     const departments = deptRes.data || []
-    const activeCount = employees.filter(e => e.status === 1).length
 
     recentEmployees.value = employees.slice(0, 6)
     stats.value = {
-      totalEmployees: statsRes.data.totalEmployees,
+      totalEmployees: statsRes.data.totalEmployees || 0,
       totalDepartments: departments.length,
-      activeEmployees: activeCount
+      activeEmployees: statsRes.data.activeEmployees || 0
     }
 
     // 计算部门人员分布
@@ -157,15 +168,14 @@ onMounted(async () => {
     })
   } catch (e) {
     console.error('Dashboard load error:', e)
+    ElMessage.error('数据加载失败，请刷新重试')
+  } finally {
+    loading.value = false
   }
 })
 </script>
 
 <style scoped>
-.stat-card {
-  border-radius: 8px;
-  border: none;
-}
 .stat-content {
   display: flex;
   justify-content: space-between;
@@ -223,5 +233,19 @@ onMounted(async () => {
 .quick-actions {
   display: flex;
   flex-direction: column;
+}
+.name-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.stat-card {
+  border-radius: 12px;
+  border: none;
+  transition: all 0.3s ease;
+}
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
 }
 </style>

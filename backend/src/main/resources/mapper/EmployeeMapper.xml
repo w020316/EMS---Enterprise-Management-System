@@ -24,6 +24,7 @@
         FROM employee e
         LEFT JOIN department d ON e.department_id = d.id
         ORDER BY e.id
+        LIMIT #{offset}, #{size}
     </select>
 
     <select id="findByCondition" resultMap="employeeResultMap">
@@ -42,6 +43,7 @@
             </if>
         </where>
         ORDER BY e.id
+        LIMIT #{offset}, #{size}
     </select>
 
     <select id="findById" resultMap="employeeResultMap">
@@ -88,5 +90,20 @@
 
     <select id="countActive" resultType="int">
         SELECT COUNT(*) FROM employee WHERE status = 1
+    </select>
+
+    <select id="countByCondition" resultType="int">
+        SELECT COUNT(*) FROM employee e
+        <where>
+            <if test="name != null and name != ''">
+                AND e.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="departmentId != null">
+                AND e.department_id = #{departmentId}
+            </if>
+            <if test="status != null">
+                AND e.status = #{status}
+            </if>
+        </where>
     </select>
 </mapper>

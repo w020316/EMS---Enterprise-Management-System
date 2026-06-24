@@ -32,6 +32,12 @@ public class DepartmentService {
     }
 
     public Result<?> add(Department department) {
+        if (department.getName() != null) {
+            Department existing = departmentMapper.findByName(department.getName());
+            if (existing != null) {
+                return Result.error("部门名称已存在");
+            }
+        }
         departmentMapper.insert(department);
         return Result.success("添加成功");
     }
@@ -43,6 +49,12 @@ public class DepartmentService {
         Department exist = departmentMapper.findById(department.getId());
         if (exist == null) {
             return Result.error("部门不存在");
+        }
+        if (department.getName() != null) {
+            Department existing = departmentMapper.findByName(department.getName());
+            if (existing != null && !existing.getId().equals(department.getId())) {
+                return Result.error("部门名称已存在");
+            }
         }
         departmentMapper.update(department);
         return Result.success("更新成功");

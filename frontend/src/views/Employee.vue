@@ -59,6 +59,17 @@
           </template>
         </el-table-column>
       </el-table>
+      <div style="margin-top: 16px; display: flex; justify-content: flex-end;">
+        <el-pagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :page-sizes="[10, 20, 50]"
+          :total="total"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="loadData"
+          @current-change="loadData"
+        />
+      </div>
     </el-card>
 
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="560px" destroy-on-close>
@@ -168,6 +179,9 @@ const formRef = ref()
 const searchName = ref('')
 const searchDept = ref(null)
 const searchStatus = ref(null)
+const currentPage = ref(1)
+const pageSize = ref(10)
+const total = ref(0)
 
 const form = reactive({
   id: null, name: '', gender: '男', birthDate: '', phone: '', email: '',
@@ -176,7 +190,9 @@ const form = reactive({
 
 const formRules = {
   name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
-  departmentId: [{ required: true, message: '请选择部门', trigger: 'change' }]
+  departmentId: [{ required: true, message: '请选择部门', trigger: 'change' }],
+  phone: [{ pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }],
+  email: [{ type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }]
 }
 
 const resetForm = () => {
@@ -200,8 +216,11 @@ const loadData = async () => {
     if (searchName.value) params.name = searchName.value
     if (searchDept.value !== null) params.departmentId = searchDept.value
     if (searchStatus.value !== null) params.status = searchStatus.value
+    params.page = currentPage.value
+    params.size = pageSize.value
     const res = await getEmployeeList(params)
-    employeeList.value = res.data || []
+    employeeList.value = res.data.list || []
+    total.value = res.data.total || 0
   } finally {
     loading.value = false
   }

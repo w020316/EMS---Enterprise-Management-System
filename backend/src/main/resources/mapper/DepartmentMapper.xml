@@ -26,4 +26,7 @@
     <select id="countByManager" resultType="int">
         SELECT COUNT(*) FROM department WHERE manager = #{manager}
     </select>
+    <select id="findByName" resultType="Department">
+        SELECT * FROM department WHERE name = #{name}
+    </select>
 </mapper>

@@ -66,10 +66,13 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Lock } from '@element-plus/icons-vue'
 import { getUserInfo, updateProfile, changePassword } from '../api/auth'
 import { uploadFile } from '../api/file'
+
+const router = useRouter()
 
 const loading = ref(false)
 const pwdLoading = ref(false)
