@@ -1,0 +1,1 @@
+import{r}from"./request-59728790.js";function n(t){return r.post("/api/auth/login",t)}function u(t){return r.post("/api/auth/register",t)}function e(){return r.get("/api/auth/info")}function i(t){return r.put("/api/auth/profile",t)}function o(t){return r.put("/api/auth/password",t)}export{o as c,e as g,n as l,u as r,i as u};
